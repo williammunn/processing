@@ -2,7 +2,6 @@ color randColor;
 int h;
 int s;
 int b;
-boolean firstClick;
 
 void setup() {
   size(300,300);
