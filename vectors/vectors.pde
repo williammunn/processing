@@ -1,4 +1,4 @@
-int numCircles = 100;
+int numCircles = 20;
 int arraySize = 30000;
 Circle[] circles = new Circle[numCircles];
 int countRemaining = numCircles;
@@ -31,8 +31,9 @@ class Circle {
   Circle() {
     location = new PVector(random(width/10,9*width/10),random(height/10,9*height/10));
     velocity = new PVector(random(-1,1),random(-1,1));
+    velocity.normalize();
     diameter = 4;
-    probHasCollided = 0.05;
+    probHasCollided = 0.1;
     if (random(1) < probHasCollided) {
     hasCollided = true;
     } else {
