@@ -4,6 +4,7 @@ Circle[] circles = new Circle[numCircles];
 int countRemaining = numCircles;
 int numRemainingArray[] = new int[arraySize];
 int m;
+int time;
 
 void setup() {
   background(50);
@@ -76,7 +77,7 @@ class Circle {
 void draw() {
   noStroke();
   countRemaining = 0;
-  fill(25,100);
+  fill(50,100);
   rect(0,0,width,height);
   // draw movers
   for (int i = 0; i < numCircles; i++) {
@@ -98,6 +99,11 @@ void draw() {
   if(m < arraySize) {
     numRemainingArray[m] = countRemaining;
   }
-  // show number of green circles 
-  text(countRemaining,width-30,height-30);
+  // show number of green circles
+  fill(100,100,255);
+  text(countRemaining,width-45,height-45);
+  if(countRemaining > 0) {
+    time = millis();
+  }
+  text(time/1000.0,width-45,height-30);
 }
