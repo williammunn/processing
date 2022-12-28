@@ -6,11 +6,11 @@ class Circle {
   PVector location;
   PVector velocity;
   int diameter;
-  boolean hasCollised = false;
+  boolean hasCollided = false;
   
   Circle() {
     location = new PVector(random(width/3,2*width/3),random(height/3,2*height/3));
-    velocity = new PVector(random(-0.5,0.5),random(-0.5,0.5));
+    velocity = new PVector(random(-1,1),random(-1,1));
     diameter = 20;
   }
   
@@ -18,7 +18,7 @@ class Circle {
     if ((location.x + 0.5*diameter) > width || (location.x - 0.5*diameter) < 0) {
     velocity.x *= -1;
     }
-    if ((location.y + 0.5*diameter) > height || (location.y - 0.5*diameter < 0) {
+    if ((location.y + 0.5*diameter) > height || (location.y - 0.5*diameter) < 0) {
       velocity.y *= -1;
     }
   }
