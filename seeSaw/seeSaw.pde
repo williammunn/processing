@@ -1,18 +1,18 @@
-Ball[] balls = new Ball[100];
+int numBalls = 100;
+Ball[] balls = new Ball[numBalls];
 
 void setup() {
   size(300,300);
   noStroke();
-  for (int i = 0; i < 100; i++) {
-    balls[i] = new Ball(color(random(255),100,100),20,0.8,random(width/5,4*width/5),random(height/5,4*height/5));
+  colorMode(HSB,400);
+  for (int i = 0; i < numBalls; i++) {
+    balls[i] = new Ball(color(random(400),400,400,200),20,0.8,random(width/10,9*width/10),random(height/10,9*height/10));
   }
 }
 
 void draw() {
-  fill(200,255);
-  rect(0,0,width,height);
-  //background(200);
-  for(int i = 0; i < 100; i++) {
+  background(0,0,400);
+  for(int i = 0; i < numBalls; i++) {
     balls[i].applyGravity();
     balls[i].collide();
     balls[i].move();
