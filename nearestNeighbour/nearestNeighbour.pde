@@ -12,7 +12,7 @@ void setup() {
 }
 
 void draw() {
-  fill(78,95,157,100);
+  fill(78,95,157,50);
   rect(-20,-20,width+40,height+40);
   for (int i = 0; i < numBalls; i++) {
     balls[i].collide();
