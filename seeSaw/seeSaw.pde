@@ -1,10 +1,10 @@
-Ball[] balls = new Ball[5];
+Ball[] balls = new Ball[100];
 
 void setup() {
   size(300,300);
   noStroke();
-  for (int i = 0; i < 5; i++) {
-    balls[i] = new Ball(color(0),20,0.8,random(width/5,4*width/5),random(height/5,4*height/5));
+  for (int i = 0; i < 100; i++) {
+    balls[i] = new Ball(color(random(255),100,100),20,0.8,random(width/5,4*width/5),random(height/5,4*height/5));
   }
 }
 
@@ -12,7 +12,7 @@ void draw() {
   fill(200,255);
   rect(0,0,width,height);
   //background(200);
-  for(int i = 0; i < 5; i++) {
+  for(int i = 0; i < 100; i++) {
     balls[i].applyGravity();
     balls[i].collide();
     balls[i].move();
