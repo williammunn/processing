@@ -1,19 +1,23 @@
-Ball ball;
+Ball[] balls = new Ball[5];
 
 void setup() {
   size(300,300);
   noStroke();
-  ball = new Ball(color(0),20,0.8,width/2,height/2);
+  for (int i = 0; i < 5; i++) {
+    balls[i] = new Ball(color(0),20,0.8,random(width/5,4*width/5),random(height/5,4*height/5));
+  }
 }
 
 void draw() {
   fill(200,255);
   rect(0,0,width,height);
   //background(200);
-  ball.applyGravity();
-  ball.collide();
-  ball.move();
-  ball.display();
+  for(int i = 0; i < 5; i++) {
+    balls[i].applyGravity();
+    balls[i].collide();
+    balls[i].move();
+    balls[i].display();
+  }
 }
 
 class Ball {
@@ -39,7 +43,7 @@ class Ball {
     ballY = _ballY;
     // vectors
     ballLocation = new PVector(ballX,ballY);
-    ballVelocity = new PVector(2,0);
+    ballVelocity = new PVector(random(-2,2),0);
     ballAcceleration = new PVector(0,0);
   }
   
@@ -82,4 +86,3 @@ class Ball {
     ellipse(ballLocation.x,ballLocation.y,ballDiameter,ballDiameter);
   }
 }
-  
