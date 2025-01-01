@@ -10,6 +10,8 @@ void setup() {
   for (int i = 0; i < population; i++) {
     people.add(new person('S',personSizeParameter,random(width),random(height)));
   }
+  // introduce a single infected person in addition
+  people.add(new person('I',personSizeParameter,random(width),random(height)));
   // now we do, and can refer to its length using the size() method
   for (int i = 0; i < people.size(); i++) {
     if (people.get(i).hasCollidedWithWall()) {
@@ -21,7 +23,11 @@ void setup() {
     for (int j = 0; j < people.size(); j++) {
       if (i != j) {
         if (people.get(i).hasCollidedWithPerson(people.get(j))) {
-          people.remove(i);
+          if (people.get(i).personState == 'S') { // we need to keep the single initial infectious case
+            people.remove(i);
+          } else {
+            people.remove(j);
+          }
         }
       }
     }
@@ -31,7 +37,6 @@ void setup() {
 void draw() {
   background(0);
   for (int i = 0; i < people.size(); i++) {
-    fill(155);
     person thisPerson = people.get(i);
     thisPerson.wallCollision();
     thisPerson.move();
@@ -54,6 +59,7 @@ class person {
   float personY;
   PVector personLocation;
   PVector personVelocity;
+  color personColor;
   // person constructor function
   person(char _personState, float _personSize, float _personX, float _personY) {
     personState = _personState;
@@ -83,7 +89,16 @@ class person {
     } else {
       return false;
     }
-  } 
+  }
+  
+  void infectionDynamics(person otherPerson) {
+    // main person gets infected
+    if (personState == 'S' && otherPerson.personState == 'I') {
+      personState = 'I';
+    } else if (personState == 'I' && otherPerson.personState == 'S') {
+      otherPerson.personState = 'I';
+    }
+  }
   
   void collision(person otherPerson) {
 
@@ -95,8 +110,13 @@ class person {
 
     // Minimum distance before they are touching
     float minDistance = personSize + otherPerson.personSize;
-
+  
+    // logic for dealing with collisions between people
     if (distanceVectMag < minDistance) {
+      // pass on the disease
+      infectionDynamics(otherPerson);
+      
+      // remaining calcs
       float distanceCorrection = (minDistance-distanceVectMag)/2.0;
       PVector d = distanceVect.copy();
       PVector correctionVector = d.normalize().mult(distanceCorrection);
@@ -188,7 +208,6 @@ class person {
       return false;
     }
   }
-    
   
   void wallCollision() {
     
@@ -215,6 +234,14 @@ class person {
   }
 
   void display() {
+    if (personState == 'S') {
+      personColor = color(0,0,255); // blue
+    } else if (personState == 'I') {
+      personColor = color(255,0,0); // red
+    } else if (personState == 'R') {
+      personColor = color(0,255,0); // green
+    }
+    fill(personColor);
     ellipse(personLocation.x, personLocation.y, personSize, personSize);
   }
 }
