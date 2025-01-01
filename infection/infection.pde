@@ -1,17 +1,18 @@
-int population = 10;
+int population = 20;
 ArrayList<person> people = new ArrayList<person>();
-int personSizeParameter = 20;
+int personSizeParameter = 10;
 
 void setup() {
   size(600, 600);
+  println(frameRate);
   noStroke();
   ellipseMode(RADIUS);
   // the first time we create the population we don't know the arrayList size in advance
   for (int i = 0; i < population; i++) {
     people.add(new person('S',personSizeParameter,random(width),random(height)));
   }
-  // introduce a single infected person in addition
-  people.add(new person('I',personSizeParameter,random(width),random(height)));
+  // introduce a single infected person in addition, the Original (O) case
+  people.add(new person('O',personSizeParameter,random(width),random(height)));
   // now we do, and can refer to its length using the size() method
   for (int i = 0; i < people.size(); i++) {
     if (people.get(i).hasCollidedWithWall()) {
@@ -48,6 +49,8 @@ void draw() {
         thisPerson.collision(otherPerson);
       }
     }
+    // deal with the possibility of recovering from the disease
+    thisPerson.recovery();
   }
 }
 
@@ -91,11 +94,25 @@ class person {
     }
   }
   
-  void infectionDynamics(person otherPerson) {
+  void recovery() {
+    // set the "gamma" parameter
+    float gamma = 0.0005;
+    float randomNumber = random(1);
+    boolean recover = (randomNumber < gamma);
+    if (recover && personState == 'I') {
+      personState = 'R';
+    }
+  }
+  
+  void transmission(person otherPerson) {
+    // set the "beta" parameter
+    float beta = 0.4;
+    float randomNumber = random(1);
+    boolean infect = (randomNumber < beta);
     // main person gets infected
-    if (personState == 'S' && otherPerson.personState == 'I') {
+    if (infect && personState == 'S' && (otherPerson.personState == 'I' || otherPerson.personState == 'O')) {
       personState = 'I';
-    } else if (personState == 'I' && otherPerson.personState == 'S') {
+    } else if (infect && (personState == 'I' || personState == 'O') && otherPerson.personState == 'S') {
       otherPerson.personState = 'I';
     }
   }
@@ -114,7 +131,7 @@ class person {
     // logic for dealing with collisions between people
     if (distanceVectMag < minDistance) {
       // pass on the disease
-      infectionDynamics(otherPerson);
+      transmission(otherPerson);
       
       // remaining calcs
       float distanceCorrection = (minDistance-distanceVectMag)/2.0;
@@ -237,6 +254,8 @@ class person {
     if (personState == 'S') {
       personColor = color(0,0,255); // blue
     } else if (personState == 'I') {
+      personColor = color(255,0,0); // red
+    } else if (personState == 'O') {
       personColor = color(255,0,0); // red
     } else if (personState == 'R') {
       personColor = color(0,255,0); // green
