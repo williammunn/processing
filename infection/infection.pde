@@ -1,21 +1,37 @@
 int population = 20;
 ArrayList<person> people = new ArrayList<person>();
 int personSizeParameter = 10;
+IntDict resultsDict;
+Table resultsTbl;
+TableRow resultsRow;
 
 void setup() {
   size(600, 600);
-  println(frameRate);
   noStroke();
   ellipseMode(RADIUS);
+  // prepare the table that will store the results
+  resultsTbl = new Table();
+  resultsTbl.addColumn("t");
+  resultsTbl.addColumn("s");
+  resultsTbl.addColumn("i");
+  resultsTbl.addColumn("r");
+  resultsDict = new IntDict;
+  resultsDict.set("s",0);
+  resultsDict.set("i",0);
+  resultsDict.set("r",0);
   // the first time we create the population we don't know the arrayList size in advance
   for (int i = 0; i < population; i++) {
     people.add(new person('S',personSizeParameter,random(width),random(height)));
+    resultsDict.increment("s");
   }
   // introduce a single infected person in addition, the Original (O) case
   people.add(new person('O',personSizeParameter,random(width),random(height)));
+  resultsDict.add("i",1);
   // now we do, and can refer to its length using the size() method
   for (int i = 0; i < people.size(); i++) {
     if (people.get(i).hasCollidedWithWall()) {
+      // need to subtract 1 off the increment value before losing this object
+      resultsDict.sub("s",1);
       people.remove(i);
     }
   }
@@ -25,10 +41,11 @@ void setup() {
       if (i != j) {
         if (people.get(i).hasCollidedWithPerson(people.get(j))) {
           if (people.get(i).personState == 'S') { // we need to keep the single initial infectious case
-            people.remove(i);
+            resultsDict.sub("s",1);
           } else {
             people.remove(j);
           }
+          resultsDict.sub("s",1);
         }
       }
     }
@@ -51,6 +68,21 @@ void draw() {
     }
     // deal with the possibility of recovering from the disease
     thisPerson.recovery();
+  }
+  // for each second that elapses, take a snapshot of the results and store this as a row of the table
+  if (frameCount %% frameRate == 0) {
+    resultsRow = resultsTbl.addRow();
+    newRow.setInt("t",frameCount/frameRate);
+    newRow.setInt("s",resultsDict.get("s"));
+    newRow.setInt("i",resultsDict.get("s"));
+    newRow.setInt("r",resultsDict.get("s"));
+}
+
+void keyPressed() {
+  if (key == CODED) {
+    if (keyCode == 49) {
+      saveTable(resultsTbl, "data/results.csv");
+    }
   }
 }
 
@@ -101,6 +133,8 @@ class person {
     boolean recover = (randomNumber < gamma);
     if (recover && personState == 'I') {
       personState = 'R';
+      resultsDict.sub("i",1);
+      resultsDict.add("r",1);
     }
   }
   
@@ -112,8 +146,12 @@ class person {
     // main person gets infected
     if (infect && personState == 'S' && (otherPerson.personState == 'I' || otherPerson.personState == 'O')) {
       personState = 'I';
+      resultsDict.sub("s",1);
+      resultsDict.add("i",1);
     } else if (infect && (personState == 'I' || personState == 'O') && otherPerson.personState == 'S') {
       otherPerson.personState = 'I';
+      resultsDict.sub("s",1);
+      resultsDict.add("i",1);
     }
   }
   
