@@ -15,7 +15,7 @@ void setup() {
   resultsTbl.addColumn("s");
   resultsTbl.addColumn("i");
   resultsTbl.addColumn("r");
-  resultsDict = new IntDict;
+  resultsDict = new IntDict();
   resultsDict.set("s",0);
   resultsDict.set("i",0);
   resultsDict.set("r",0);
@@ -70,18 +70,20 @@ void draw() {
     thisPerson.recovery();
   }
   // for each second that elapses, take a snapshot of the results and store this as a row of the table
-  if (frameCount %% frameRate == 0) {
+  if (frameCount % frameRate == 0) {
     resultsRow = resultsTbl.addRow();
-    newRow.setInt("t",frameCount/frameRate);
-    newRow.setInt("s",resultsDict.get("s"));
-    newRow.setInt("i",resultsDict.get("s"));
-    newRow.setInt("r",resultsDict.get("s"));
+    resultsRow.setInt("t",resultsTbl.getRowCount());
+    resultsRow.setInt("s",resultsDict.get("s"));
+    resultsRow.setInt("i",resultsDict.get("s"));
+    resultsRow.setInt("r",resultsDict.get("s"));
+  }
 }
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == 49) {
+    if (keyCode == RETURN) {
       saveTable(resultsTbl, "data/results.csv");
+      exit();
     }
   }
 }
