@@ -22,7 +22,7 @@ void setup() {
   // the first time we create the population we don't know the arrayList size in advance
   for (int i = 0; i < population; i++) {
     people.add(new person('S',personSizeParameter,random(width),random(height)));
-    resultsDict.increment("s");
+    resultsDict.add("s",1);
   }
   // introduce a single infected person in addition, the Original (O) case
   people.add(new person('O',personSizeParameter,random(width),random(height)));
@@ -81,9 +81,10 @@ void draw() {
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == RETURN) {
-      saveTable(resultsTbl, "data/results.csv");
+    if (keyCode == UP) {
+      saveTable(resultsTbl, "/Users/williammunn/Documents/GitHub/processing/infection/results.csv");
       exit();
+      println("results saved");
     }
   }
 }
