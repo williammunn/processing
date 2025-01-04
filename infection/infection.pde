@@ -1,4 +1,4 @@
-int population = 20;
+int population = 50;
 ArrayList<person> people = new ArrayList<person>();
 int personSizeParameter = 10;
 IntDict resultsDict;
@@ -6,9 +6,10 @@ Table resultsTbl;
 TableRow resultsRow;
 
 void setup() {
-  size(600, 600);
+  size(800, 800);
   noStroke();
   ellipseMode(RADIUS);
+  frameRate(120);
   // prepare the table that will store the results
   resultsTbl = new Table();
   resultsTbl.addColumn("t");
@@ -24,6 +25,7 @@ void setup() {
     people.add(new person('S',personSizeParameter,random(width),random(height)));
     resultsDict.add("s",1);
   }
+  println("s = " + resultsDict.get("s"));
   // introduce a single infected person in addition, the Original (O) case
   people.add(new person('O',personSizeParameter,random(width),random(height)));
   resultsDict.add("i",1);
@@ -45,8 +47,9 @@ void setup() {
           } else {
             people.remove(j);
           }
+          // decrement the susceptible count by 1
+          resultsDict.sub("s",1);
         }
-        resultsDict.sub("s",1);
       }
     }
   }
@@ -76,7 +79,7 @@ void draw() {
   if (frameMod == 0) {
     println("1 second elapsed");
     resultsRow = resultsTbl.addRow();
-    resultsRow.setInt("t",resultsTbl.getRowCount());
+    resultsRow.setInt("t",frameMod);
     resultsRow.setInt("s",resultsDict.get("s"));
     resultsRow.setInt("i",resultsDict.get("i"));
     resultsRow.setInt("r",resultsDict.get("r"));
@@ -133,7 +136,7 @@ class person {
   
   void recovery() {
     // set the "gamma" parameter
-    float gamma = 0.0005;
+    float gamma = 0.0001;
     float randomNumber = random(1);
     boolean recover = (randomNumber < gamma);
     if (recover && personState == 'I') {
