@@ -41,12 +41,12 @@ void setup() {
       if (i != j) {
         if (people.get(i).hasCollidedWithPerson(people.get(j))) {
           if (people.get(i).personState == 'S') { // we need to keep the single initial infectious case
-            resultsDict.sub("s",1);
+            people.remove(i);
           } else {
             people.remove(j);
           }
-          resultsDict.sub("s",1);
         }
+        resultsDict.sub("s",1);
       }
     }
   }
@@ -71,12 +71,14 @@ void draw() {
   }
   // for each second that elapses, take a snapshot of the results and store this as a row of the table
   if (frameCount % frameRate == 0) {
+    println("1 second elapsed");
     resultsRow = resultsTbl.addRow();
     resultsRow.setInt("t",resultsTbl.getRowCount());
     resultsRow.setInt("s",resultsDict.get("s"));
     resultsRow.setInt("i",resultsDict.get("s"));
     resultsRow.setInt("r",resultsDict.get("s"));
   }
+  println(frameCount);
 }
 
 void keyPressed() {
@@ -112,16 +114,12 @@ class person {
   }
   
   boolean hasCollidedWithPerson(person otherPerson) {
-    
     // Get distances between the balls components
     PVector distanceVect = PVector.sub(otherPerson.personLocation, personLocation);
-
     // Calculate magnitude of the vector separating the balls
     float distanceVectMag = distanceVect.mag();
-
     // Minimum distance before they are touching
     float minDistance = personSize + otherPerson.personSize;
-
     if (distanceVectMag < minDistance) {
       return true;
     } else {
@@ -159,72 +157,57 @@ class person {
   }
   
   void collision(person otherPerson) {
-
     // Get distances between the balls components
     PVector distanceVect = PVector.sub(otherPerson.personLocation, personLocation);
-
     // Calculate magnitude of the vector separating the balls
     float distanceVectMag = distanceVect.mag();
-
     // Minimum distance before they are touching
     float minDistance = personSize + otherPerson.personSize;
-  
     // logic for dealing with collisions between people
     if (distanceVectMag < minDistance) {
       // pass on the disease
       transmission(otherPerson);
-      
       // remaining calcs
       float distanceCorrection = (minDistance-distanceVectMag)/2.0;
       PVector d = distanceVect.copy();
       PVector correctionVector = d.normalize().mult(distanceCorrection);
       otherPerson.personLocation.add(correctionVector);
       personLocation.sub(correctionVector);
-
       // get angle of distanceVect
       float theta  = distanceVect.heading();
       // precalculate trig values
       float sine = sin(theta);
       float cosine = cos(theta);
-
       /* bTemp will hold rotated ball positions. You 
        just need to worry about bTemp[1] position*/
       PVector[] bTemp = {
         new PVector(), new PVector()
       };
-
       bTemp[1].x  = cosine * distanceVect.x + sine * distanceVect.y;
       bTemp[1].y  = cosine * distanceVect.y - sine * distanceVect.x;
-
       // rotate Temporary velocities
       PVector[] vTemp = {
         new PVector(), new PVector()
       };
-
       vTemp[0].x  = cosine * personVelocity.x + sine * personVelocity.y;
       vTemp[0].y  = cosine * personVelocity.y - sine * personVelocity.x;
       vTemp[1].x  = cosine * otherPerson.personVelocity.x + sine * otherPerson.personVelocity.y;
       vTemp[1].y  = cosine * otherPerson.personVelocity.y - sine * otherPerson.personVelocity.x;
-
       /* Now that velocities are rotated, you can use 1D
        conservation of momentum equations to calculate 
        the final velocity along the x-axis. */
       PVector[] vFinal = {  
         new PVector(), new PVector()
       };
-
       // final rotated velocity for b[0]
       vFinal[0].x = ((personSize - otherPerson.personSize) * vTemp[0].x + 2 * otherPerson.personSize * vTemp[1].x) / (personSize + otherPerson.personSize);
       vFinal[0].y = vTemp[0].y;
-
       // final rotated velocity for b[0]
       vFinal[1].x = ((otherPerson.personSize - personSize) * vTemp[1].x + 2 * personSize * vTemp[0].x) / (personSize + otherPerson.personSize);
       vFinal[1].y = vTemp[1].y;
-
       // hack to avoid clumping
       bTemp[0].x += vFinal[0].x;
       bTemp[1].x += vFinal[1].x;
-
       /* Rotate ball positions and velocities back
        Reverse signs in trig expressions to rotate 
        in the opposite direction */
@@ -232,28 +215,24 @@ class person {
       PVector[] bFinal = { 
         new PVector(), new PVector()
       };
-
       bFinal[0].x = cosine * bTemp[0].x - sine * bTemp[0].y;
       bFinal[0].y = cosine * bTemp[0].y + sine * bTemp[0].x;
       bFinal[1].x = cosine * bTemp[1].x - sine * bTemp[1].y;
       bFinal[1].y = cosine * bTemp[1].y + sine * bTemp[1].x;
-
       // update balls to screen position
       otherPerson.personLocation.x = personLocation.x + bFinal[1].x;
       otherPerson.personLocation.y = personLocation.y + bFinal[1].y;
-
       personLocation.add(bFinal[0]);
-
       // update velocities
       personVelocity.x = cosine * vFinal[0].x - sine * vFinal[0].y;
       personVelocity.y = cosine * vFinal[0].y + sine * vFinal[0].x;
       otherPerson.personVelocity.x = cosine * vFinal[1].x - sine * vFinal[1].y;
       otherPerson.personVelocity.y = cosine * vFinal[1].y + sine * vFinal[1].x;
+      // scale by the speed, again
     }
   }
   
   boolean hasCollidedWithWall() {
-    
     if (personLocation.x - personSize < 0) {
       return true;
     } else if (personLocation.x + personSize > width) {
@@ -268,7 +247,6 @@ class person {
   }
   
   void wallCollision() {
-    
     if (hasCollidedWithWall()) {
       if (personLocation.x - personSize < 0) {
         personVelocity.x = personVelocity.x * -1;
@@ -285,7 +263,7 @@ class person {
       }
     }
   }
-  
+
   void move() {
     // update
     personLocation.add(personVelocity);
