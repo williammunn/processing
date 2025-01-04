@@ -70,7 +70,10 @@ void draw() {
     thisPerson.recovery();
   }
   // for each second that elapses, take a snapshot of the results and store this as a row of the table
-  if (frameCount % frameRate == 0) {
+  int _frameCount = frameCount;
+  int _frameRate = round(frameRate);
+  int frameMod = _frameCount % _frameRate;
+  if (frameMod == 0) {
     println("1 second elapsed");
     resultsRow = resultsTbl.addRow();
     resultsRow.setInt("t",resultsTbl.getRowCount());
@@ -78,7 +81,6 @@ void draw() {
     resultsRow.setInt("i",resultsDict.get("s"));
     resultsRow.setInt("r",resultsDict.get("s"));
   }
-  println(frameCount);
 }
 
 void keyPressed() {
