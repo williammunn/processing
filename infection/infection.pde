@@ -78,8 +78,10 @@ void draw() {
     resultsRow = resultsTbl.addRow();
     resultsRow.setInt("t",resultsTbl.getRowCount());
     resultsRow.setInt("s",resultsDict.get("s"));
-    resultsRow.setInt("i",resultsDict.get("s"));
-    resultsRow.setInt("r",resultsDict.get("s"));
+    resultsRow.setInt("i",resultsDict.get("i"));
+    resultsRow.setInt("r",resultsDict.get("r"));
+    // print results
+    println("Current totals are: S = " + resultsDict.get("s") + "; I = " + resultsDict.get("i") + "; R = " + resultsDict.get("r"));
   }
 }
 
