@@ -9,7 +9,7 @@ void setup() {
   size(800, 800);
   noStroke();
   ellipseMode(RADIUS);
-  frameRate(120);
+  frameRate(60);
   // prepare the table that will store the results
   resultsTbl = new Table();
   resultsTbl.addColumn("t");
@@ -26,8 +26,8 @@ void setup() {
     resultsDict.add("s",1);
   }
   println("s = " + resultsDict.get("s"));
-  // introduce a single infected person in addition, the Original (O) case
-  people.add(new person('O',personSizeParameter,random(width),random(height)));
+  // introduce a single infected person in addition, the origin case
+  people.add(new person('I',personSizeParameter,random(width),random(height)));
   resultsDict.add("i",1);
   // now we do, and can refer to its length using the size() method
   for (int i = 0; i < people.size(); i++) {
@@ -152,11 +152,11 @@ class person {
     float randomNumber = random(1);
     boolean infect = (randomNumber < beta);
     // main person gets infected
-    if (infect && personState == 'S' && (otherPerson.personState == 'I' || otherPerson.personState == 'O')) {
+    if (infect && personState == 'S' && otherPerson.personState == 'I') {
       personState = 'I';
       resultsDict.sub("s",1);
       resultsDict.add("i",1);
-    } else if (infect && (personState == 'I' || personState == 'O') && otherPerson.personState == 'S') {
+    } else if (infect && personState == 'I' && otherPerson.personState == 'S') {
       otherPerson.personState = 'I';
       resultsDict.sub("s",1);
       resultsDict.add("i",1);
